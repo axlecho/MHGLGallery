@@ -5,21 +5,40 @@ import java.nio.ByteOrder
 import java.nio.FloatBuffer
 import java.nio.ShortBuffer
 
+private const val GRID = 100
+private const val RADIUS = 0.18f
 
 class MHGLVertex {
     var vertexBuffer: FloatBuffer? = null
-    private val vertexData = floatArrayOf(
-        -1.0f, 1.0f, 1.0f, //正面左上0
-        -1.0f, -1.0f, 1.0f, //正面左下1
-        1.0f, -1.0f, 1.0f, //正面右下2
-        1.0f, 1.0f, 1.0f, //正面右上3
-        -1.0f, 1.0f, -1.0f, //反面左上4
-        -1.0f, -1.0f, -1.0f, //反面左下5
-        1.0f, -1.0f, -1.0f, //反面右下6
-        1.0f, 1.0f, -1.0f//反面右上7
-    )
+    private val vertexData = FloatArray((GRID + 1) * (GRID + 1) * 3)
+    private val curlCirclePosition = 50.0f
 
     init {
+        // 计算每个顶点坐标
+        for (row in 0..GRID)
+            for (col in 0..GRID) {
+                val pos = 3 * (row * (GRID + 1) + col)
+                // vertices[pos + 2] = depth
+                // 横向位移比例
+                val perc = 1.0f - curlCirclePosition / GRID.toFloat()
+                // 横向位移
+                val dx = GRID - curlCirclePosition
+                // var calc_r = perc * RADIUS
+                // if (calc_r > RADIUS)  calc_r = RADIUS
+                // 水波半径
+                var calc_r = RADIUS * 1
+                var mov_x = 0f
+
+                if (perc < 0.20f) calc_r = RADIUS * perc * 5f
+                if (perc > 0.05f) mov_x = perc - 0.05f
+
+                val w_h_ratio = 1 - calc_r
+
+                vertexData[pos] = col.toFloat() / GRID.toFloat() * w_h_ratio - mov_x                                      // x
+                vertexData[pos + 1] = row.toFloat() / GRID.toFloat()                                                       // y
+                vertexData[pos + 2] = (calc_r * Math.sin(3.14 / (GRID * 0.60f) * (col - dx)) + calc_r * 1.1f).toFloat()   // z  Asin(2pi/wav*x)
+            }
+
         val bb = ByteBuffer.allocateDirect(vertexData.size * 4)
         bb.order(ByteOrder.nativeOrder())
         vertexBuffer = bb.asFloatBuffer()
@@ -31,16 +50,23 @@ class MHGLVertex {
 
 class MHGLIndex {
     var indexBuffer: ShortBuffer? = null
-    val index = shortArrayOf(
-        6, 7, 4, 6, 4, 5, //后面
-        6, 3, 7, 6, 2, 3, //右面
-        6, 5, 1, 6, 1, 2, //下面
-        0, 3, 2, 0, 2, 1, //正面
-        0, 1, 5, 0, 5, 4, //左面
-        0, 7, 3, 0, 4, 7//上面
-    )
+    val index = ShortArray(GRID * GRID * 6)
 
     init {
+        for (row in 0 until GRID)
+            for (col in 0 until GRID) {
+                val pos = 6 * (row * GRID + col)
+
+                index[pos] = (row * (GRID + 1) + col).toShort()
+                index[pos + 1] = (row * (GRID + 1) + col + 1).toShort()
+                index[pos + 2] = ((row + 1) * (GRID + 1) + col).toShort()
+
+                index[pos + 3] = (row * (GRID + 1) + col + 1).toShort()
+                index[pos + 4] = ((row + 1) * (GRID + 1) + col + 1).toShort()
+                index[pos + 5] = ((row + 1) * (GRID + 1) + col).toShort()
+            }
+
+
         val cc = ByteBuffer.allocateDirect(index.size * 2)
         cc.order(ByteOrder.nativeOrder())
         indexBuffer = cc.asShortBuffer()

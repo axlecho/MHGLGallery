@@ -8,16 +8,14 @@ class MHGLShader {
 
     private val vertexShaderCode = "attribute vec4 vPosition;" +
             "uniform mat4 vMatrix;" +
-            "varying  vec4 vColor;" +
             "attribute vec4 aColor;" +
             "void main() {" +
             "  gl_Position = vMatrix*vPosition;" +
-            "  vColor=aColor;" +
             "}"
 
     private val fragmentShaderCode = (
             "precision mediump float;" +
-                    "varying vec4 vColor;" +
+                    "uniform vec4 vColor;" +
                     "void main() {" +
                     "  gl_FragColor = vColor;" +
                     "}")
@@ -36,6 +34,6 @@ class MHGLShader {
 
     val matrixHandler = GLES20.glGetUniformLocation(program, "vMatrix")
     val positionHandle = GLES20.glGetAttribLocation(program, "vPosition")
-    val colorHandle = GLES20.glGetAttribLocation(program, "aColor")
+    val colorHandle = GLES20.glGetUniformLocation(program, "vColor")
 
 }
