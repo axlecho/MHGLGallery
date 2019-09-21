@@ -4,4 +4,8 @@ import android.content.Context
 import android.opengl.GLSurfaceView
 
 
-class MHGLSurfaceView(context: Context) : GLSurfaceView(context)
+class MHGLSurfaceView(context: Context) : GLSurfaceView(context) {
+    init {
+        setEGLContextClientVersion(2)
+    }
+}
