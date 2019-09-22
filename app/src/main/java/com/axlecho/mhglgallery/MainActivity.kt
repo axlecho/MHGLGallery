@@ -1,5 +1,6 @@
 package com.axlecho.mhglgallery
 
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.axlecho.library.MHGLRender
@@ -10,9 +11,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val glView = MHGLSurfaceView(this)
-        val glRenderer = MHGLRender()
+        val glRenderer = MHGLRender(BitmapFactory.decodeStream(resources.assets.open("test.jpg")))
         glView.setRenderer(glRenderer)
-
         setContentView(glView)
     }
 }
