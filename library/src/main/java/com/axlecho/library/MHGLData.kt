@@ -34,17 +34,10 @@ class MHGLVertex {
 
                 val w_h_ratio = 1 - calc_r
 
-                vertexData[pos] = col.toFloat() / GRID.toFloat() * w_h_ratio - mov_x                                      // x
-                vertexData[pos + 1] = row.toFloat() / GRID.toFloat()                                                       // y
-                vertexData[pos + 2] = (calc_r * Math.sin(3.14 / (GRID * 0.60f) * (col - dx)) + calc_r * 1.1f).toFloat()   // z  Asin(2pi/wav*x)
+                vertexData[pos] = col.toFloat() / GRID.toFloat() * w_h_ratio - mov_x                                        // x
+                vertexData[pos + 1] = row.toFloat() / GRID.toFloat()                                                        // y
+                vertexData[pos + 2] = (calc_r * Math.sin(3.14 / (GRID * 0.60f) * (col - dx)) + calc_r * 1.1f).toFloat()     // z  Asin(2pi/wav*x)
             }
-
-        vertexData = floatArrayOf(
-            -1.0f, 1.0f, //左上角
-            -1.0f, -1.0f, //左下角
-            1.0f, 1.0f, //右上角
-            1.0f, -1.0f     //右下角
-        )
         val bb = ByteBuffer.allocateDirect(vertexData.size * 4)
         bb.order(ByteOrder.nativeOrder())
         vertexBuffer = bb.asFloatBuffer()
@@ -91,13 +84,6 @@ class MHGLTexture {
                 texture[pos] = col / GRID.toFloat()
                 texture[pos + 1] = 1 - row / GRID.toFloat()
             }
-
-        texture = floatArrayOf(
-            0f, 0f,0f, //左上角
-            0f, 1f,0f, //左下角
-            1f, 0f,0f, //右上角
-            1f, 1f,0f //右下角
-        )
         val byteBuf = ByteBuffer.allocateDirect(texture.size * 4)
         byteBuf.order(ByteOrder.nativeOrder())
         textureBuffer = byteBuf.asFloatBuffer()
