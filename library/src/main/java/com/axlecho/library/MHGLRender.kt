@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.opengl.Matrix
+import android.os.SystemClock
 import com.axlecho.library.MHGLUtils.Companion.loadTexture
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
@@ -22,13 +23,20 @@ class MHGLRender(private val bitmap: Bitmap) : GLSurfaceView.Renderer {
     private lateinit var shader: MHGLShader
 
     override fun onDrawFrame(gl: GL10?) {
+
+
+
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
         GLES20.glUseProgram(shader.program)
+
 
         //启用三角形顶点的句柄
         GLES20.glEnableVertexAttribArray(shader.positionHandle)
         GLES20.glEnableVertexAttribArray(shader.textureCoordinate)
 
+        vertex.curlCirclePosition = 100.0f - (SystemClock.currentThreadTimeMillis().toFloat() / 100.0f)
+        vertex.move()
+        MHGLLog.v("onDrawFrame move to ${vertex.curlCirclePosition}")
         //指定vMatrix的值
         GLES20.glUniformMatrix4fv(shader.matrixHandler, 1, false, mMVPMatrix, 0)
         //准备三角形的坐标数据
@@ -51,15 +59,17 @@ class MHGLRender(private val bitmap: Bitmap) : GLSurfaceView.Renderer {
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
         //计算宽高比
-        val ratio = width.toFloat() / height.toFloat()
+        // val ratio = width.toFloat() / height.toFloat()
+        // GLES20.glViewport(0, 0, width, height)
+
+        val ratio =1319f  / 1868f
         //设置透视投影
-        Matrix.frustumM(mProjectMatrix, 0, -ratio, ratio, -1f, 1f, 3f, 50f)
+        Matrix.frustumM(mProjectMatrix, 0, -1.0f, 1.0f, 0.0f, ratio, 3f, 50f)
         //设置相机位置
-        Matrix.setLookAtM(mViewMatrix, 0, 0.0f, 0.0f, 3.1f, 0f, 0f, 0f, 0f, 1.0f, 0.0f)
+        Matrix.setLookAtM(mViewMatrix, 0, 0.0f, 0.0f, 4f, 0.0f, 0.0f, 0f, 0f, 1.0f, 0.0f)
         //计算变换矩阵
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectMatrix, 0, mViewMatrix, 0)
 
-        GLES20.glViewport(0, 0, width, height)
     }
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
