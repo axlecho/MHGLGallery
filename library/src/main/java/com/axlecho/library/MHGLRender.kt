@@ -32,7 +32,7 @@ class MHGLRender(private val bitmap: Bitmap) : GLSurfaceView.Renderer {
         //指定vMatrix的值
         GLES20.glUniformMatrix4fv(shader.matrixHandler, 1, false, mMVPMatrix, 0)
         //准备三角形的坐标数据
-        GLES20.glVertexAttribPointer(shader.positionHandle, 2, GLES20.GL_FLOAT, false, 0, vertex.vertexBuffer)
+        GLES20.glVertexAttribPointer(shader.positionHandle, 3, GLES20.GL_FLOAT, false, 0, vertex.vertexBuffer)
 
         //设置绘制三角形的颜色
         textureId = loadTexture(bitmap)
@@ -42,7 +42,7 @@ class MHGLRender(private val bitmap: Bitmap) : GLSurfaceView.Renderer {
         // GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, loadTexture(bitmap))
 
         GLES20.glUniform1i(shader.textureHandle, 0)
-        GLES20.glVertexAttribPointer(shader.textureCoordinate, 3, GLES20.GL_FLOAT, false, 0, texture.textureBuffer)
+        GLES20.glVertexAttribPointer(shader.textureCoordinate, 2, GLES20.GL_FLOAT, false, 0, texture.textureBuffer)
 
         // GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4)
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, index.index.size, GLES20.GL_UNSIGNED_SHORT, index.indexBuffer)
@@ -55,12 +55,11 @@ class MHGLRender(private val bitmap: Bitmap) : GLSurfaceView.Renderer {
         //设置透视投影
         Matrix.frustumM(mProjectMatrix, 0, -ratio, ratio, -1f, 1f, 3f, 50f)
         //设置相机位置
-        Matrix.setLookAtM(mViewMatrix, 0, 0.0f, 0.0f, 49f, 0f, 0f, 0f, 0f, 1.0f, 0.0f)
+        Matrix.setLookAtM(mViewMatrix, 0, 0.0f, 0.0f, 3.1f, 0f, 0f, 0f, 0f, 1.0f, 0.0f)
         //计算变换矩阵
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectMatrix, 0, mViewMatrix, 0)
 
-        // GLES20.glViewport(0, 0, width, height)
-
+        GLES20.glViewport(0, 0, width, height)
     }
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {

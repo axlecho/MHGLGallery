@@ -11,7 +11,7 @@ private const val RADIUS = 0.18f
 class MHGLVertex {
     var vertexBuffer: FloatBuffer? = null
     private var vertexData = FloatArray((GRID + 1) * (GRID + 1) * 3)
-    private val curlCirclePosition = 50.0f
+    private val curlCirclePosition = 2.0f
 
     init {
         // 计算每个顶点坐标
