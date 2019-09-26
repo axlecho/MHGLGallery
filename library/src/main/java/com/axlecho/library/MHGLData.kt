@@ -1,5 +1,8 @@
 package com.axlecho.library
 
+import android.graphics.Bitmap
+import android.opengl.GLES20
+import android.os.SystemClock
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
@@ -11,13 +14,13 @@ private const val RADIUS = 0.18f
 class MHGLVertex {
     var vertexBuffer: FloatBuffer? = null
     private var vertexData = FloatArray((GRID + 1) * (GRID + 1) * 3)
-     var curlCirclePosition = 15.0f
+    var curlCirclePosition = 15.0f
 
     init {
         move()
     }
 
-     fun move() {
+    fun move() {
         // 计算每个顶点坐标
         for (row in 0..GRID)
             for (col in 0..GRID) {
@@ -115,5 +118,92 @@ class MHGLColor {
         colorBuffer = cc.asFloatBuffer()
         colorBuffer?.put(color)
         colorBuffer?.position(0)
+    }
+}
+
+class MHPage {
+    private val vertex = MHGLVertex()
+    private val index = MHGLIndex()
+    private val color = MHGLColor()
+    private val texture = MHGLTexture()
+
+
+    fun draw(bitmap: Bitmap, positionAttr: Int, textureAttr: Int, textureCoordinate: Int) {
+        vertex.curlCirclePosition = 100.0f - (SystemClock.currentThreadTimeMillis().toFloat() / 100.0f)
+        vertex.move()
+        MHGLLog.v("onDrawFrame move to ${vertex.curlCirclePosition}")
+        //准备三角形的坐标数据
+        GLES20.glVertexAttribPointer(positionAttr, 3, GLES20.GL_FLOAT, false, 0, vertex.vertexBuffer)
+
+        //设置绘制三角形的颜色
+        MHGLUtils.loadTexture(bitmap)
+        // GLES20.glEnableVertexAttribArray(shader.colorHandle)
+        // GLES20.glVertexAttribPointer(shader.colorHandle, 4, GLES20.GL_FLOAT, false, 0, color.colorBuffer)
+        // GLES20.glUniform4fv(shader.colorHandle, 1, floatArrayOf(1.0f, 1.0f, 1.0f, 1.0f), 0)
+        // GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, loadTexture(bitmap))
+
+        GLES20.glUniform1i(textureAttr, 0)
+        GLES20.glVertexAttribPointer(textureCoordinate, 2, GLES20.GL_FLOAT, false, 0, texture.textureBuffer)
+
+        // GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4)
+        GLES20.glDrawElements(GLES20.GL_TRIANGLES, index.index.size, GLES20.GL_UNSIGNED_SHORT, index.indexBuffer)
+    }
+}
+
+class MHBackground {
+    private val vertexBuffer: FloatBuffer
+    private val indexBuffer: ShortBuffer
+    private val textureBuffer: FloatBuffer
+    var vertexData = floatArrayOf(
+        -0.8f, 0.8f, 0.0f,
+        -0.8f, -0.8f, 0.0f,
+        0.8f, -0.8f, 0.0f,
+        0.8f, 0.8f, 0.0f
+    )
+
+    var textueData = floatArrayOf(
+        0.0f, 0.0f,
+        0.0f, 1.0f,
+        1.0f, 1.0f,
+        1.0f, 0.0f
+    )
+
+    var indexData = shortArrayOf(0,1,2,0,2,3)
+
+    init {
+        val cc = ByteBuffer.allocateDirect(indexData.size * 2)
+        cc.order(ByteOrder.nativeOrder())
+        indexBuffer = cc.asShortBuffer()
+        indexBuffer.put(indexData)
+        indexBuffer.position(0)
+
+        val vv = ByteBuffer.allocateDirect(vertexData.size * 4)
+        vv.order(ByteOrder.nativeOrder())
+        vertexBuffer = vv.asFloatBuffer()
+        vertexBuffer.put(vertexData)
+        vertexBuffer.position(0)
+
+        val tt = ByteBuffer.allocateDirect(textueData.size * 4)
+        tt.order(ByteOrder.nativeOrder())
+        textureBuffer = tt.asFloatBuffer()
+        textureBuffer.put(textueData)
+        textureBuffer.position(0)
+    }
+
+    fun draw(bitmap: Bitmap, positionAttr: Int, textureAttr: Int, textureCoordinate: Int) {
+        //准备三角形的坐标数据
+        GLES20.glVertexAttribPointer(positionAttr, 3, GLES20.GL_FLOAT, false, 0, vertexBuffer)
+        MHGLUtils.loadTexture(bitmap)
+        // GLES20.glEnableVertexAttribArray(shader.colorHandle)
+        // GLES20.glVertexAttribPointer(shader.colorHandle, 4, GLES20.GL_FLOAT, false, 0, color.colorBuffer)
+        // GLES20.glUniform4fv(shader.colorHandle, 1, floatArrayOf(1.0f, 1.0f, 1.0f, 1.0f), 0)
+        // GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, loadTexture(bitmap))
+
+        GLES20.glUniform1i(textureAttr, 0)
+        GLES20.glVertexAttribPointer(textureCoordinate,3,GLES20.GL_FLOAT,false,0,textureBuffer)
+
+
+        // GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 2)
+        GLES20.glDrawElements(GLES20.GL_TRIANGLES, indexData.size, GLES20.GL_UNSIGNED_SHORT, indexBuffer)
     }
 }
