@@ -11,7 +11,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val glView = MHGLSurfaceView(this)
-        val glRenderer = MHGLRender(BitmapFactory.decodeStream(resources.assets.open("test.jpg")))
+        val glRenderer = MHGLRender(this,BitmapFactory.decodeStream(resources.assets.open("test.jpg")))
         glView.setRenderer(glRenderer)
         setContentView(glView)
     }
