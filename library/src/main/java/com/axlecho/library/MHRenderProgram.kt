@@ -8,7 +8,7 @@ import java.io.InputStreamReader
 
 class MHRenderProgram(vID: Int, fID: Int, context: Context) {
     companion object {
-        private const val TAG = "program"
+        private const val TAG = "render"
     }
 
 
@@ -28,7 +28,7 @@ class MHRenderProgram(vID: Int, fID: Int, context: Context) {
         val status = IntArray(1)
         GLES20.glGetProgramiv(program, GLES20.GL_LINK_STATUS, status, 0)
         if (status[0] != GLES20.GL_TRUE) {
-            throw RuntimeException("could not link program ${GLES20.glGetProgramInfoLog(program)}")
+            throw RuntimeException("could not link render ${GLES20.glGetProgramInfoLog(program)}")
         }
     }
 

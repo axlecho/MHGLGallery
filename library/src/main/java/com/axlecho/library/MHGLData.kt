@@ -148,6 +148,14 @@ class MHPage {
         // GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4)
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, index.index.size, GLES20.GL_UNSIGNED_SHORT, index.indexBuffer)
     }
+
+    fun drawShadow(positionAttr: Int) {
+        vertex.curlCirclePosition = 100.0f - (SystemClock.currentThreadTimeMillis().toFloat() / 100.0f)
+        vertex.move()
+        MHGLLog.v("onDrawFrame move to ${vertex.curlCirclePosition}")
+        GLES20.glVertexAttribPointer(positionAttr, 3, GLES20.GL_FLOAT, false, 0, vertex.vertexBuffer)
+        GLES20.glDrawElements(GLES20.GL_TRIANGLES, index.index.size, GLES20.GL_UNSIGNED_SHORT, index.indexBuffer)
+    }
 }
 
 class MHBackground {
@@ -155,10 +163,10 @@ class MHBackground {
     private val indexBuffer: ShortBuffer
     private val textureBuffer: FloatBuffer
     var vertexData = floatArrayOf(
-        -0.8f, 0.8f, 0.0f,
-        -0.8f, -0.8f, 0.0f,
-        0.8f, -0.8f, 0.0f,
-        0.8f, 0.8f, 0.0f
+        -1.0f, 1.0f, 0.0f,
+        -1.0f, -1.0f, 0.0f,
+        1.0f, -1.0f, 0.0f,
+        1.0f, 1.0f, 0.0f
     )
 
     var textueData = floatArrayOf(
@@ -168,7 +176,7 @@ class MHBackground {
         1.0f, 0.0f
     )
 
-    var indexData = shortArrayOf(0,1,2,0,2,3)
+    var indexData = shortArrayOf(0, 1, 2, 0, 2, 3)
 
     init {
         val cc = ByteBuffer.allocateDirect(indexData.size * 2)
@@ -191,6 +199,7 @@ class MHBackground {
     }
 
     fun draw(bitmap: Bitmap, positionAttr: Int, textureAttr: Int, textureCoordinate: Int) {
+
         //准备三角形的坐标数据
         GLES20.glVertexAttribPointer(positionAttr, 3, GLES20.GL_FLOAT, false, 0, vertexBuffer)
         MHGLUtils.loadTexture(bitmap)
@@ -200,7 +209,7 @@ class MHBackground {
         // GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, loadTexture(bitmap))
 
         GLES20.glUniform1i(textureAttr, 0)
-        GLES20.glVertexAttribPointer(textureCoordinate,3,GLES20.GL_FLOAT,false,0,textureBuffer)
+        GLES20.glVertexAttribPointer(textureCoordinate, 3, GLES20.GL_FLOAT, false, 0, textureBuffer)
 
 
         // GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 2)
