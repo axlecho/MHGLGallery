@@ -7,26 +7,6 @@ import android.opengl.GLUtils
 
 class MHGLUtils {
     companion object {
-        fun loadShader(type: Int, shaderCode: String): Int {
-            // 根据type创建顶点着色器或者片元着色器
-            val shader = GLES20.glCreateShader(type)
-            //将资源加入到着色器中，并编译
-            GLES20.glShaderSource(shader, shaderCode)
-            GLES20.glCompileShader(shader)
-
-
-            val compiled = IntArray(1)
-            // 检查是否编译成功
-            GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS, compiled, 0)
-            if (compiled[0] != GLES20.GL_TRUE) {
-                MHGLLog.e("[load shader] failed " + compiled[0])
-                GLES20.glDeleteShader(shader)
-                return -1
-            }
-            return shader
-        }
-
-
         fun loadTexture(bitmap: Bitmap): Int {
             if (bitmap.isRecycled) {
                 return 0
