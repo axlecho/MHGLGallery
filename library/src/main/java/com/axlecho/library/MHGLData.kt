@@ -171,12 +171,14 @@ class MHBackground {
 
     var textueData = floatArrayOf(
         0.0f, 0.0f,
-        0.0f, 1.0f,
+        1.0f, 0.0f,
         1.0f, 1.0f,
-        1.0f, 0.0f
+        1.0f, 1.0f,
+        0.0f, 1.0f,
+        0.0f, 0.0f
     )
 
-    var indexData = shortArrayOf(0, 1, 2, 0, 2, 3)
+    var indexData = shortArrayOf(0, 1, 2, 2, 3, 0)
 
     init {
         val cc = ByteBuffer.allocateDirect(indexData.size * 2)
@@ -199,14 +201,9 @@ class MHBackground {
     }
 
     fun draw(bitmap: Bitmap, positionAttr: Int, textureAttr: Int, textureCoordinate: Int) {
-
         //准备三角形的坐标数据
         GLES20.glVertexAttribPointer(positionAttr, 3, GLES20.GL_FLOAT, false, 0, vertexBuffer)
         MHGLUtils.loadTexture(bitmap)
-        // GLES20.glEnableVertexAttribArray(shader.colorHandle)
-        // GLES20.glVertexAttribPointer(shader.colorHandle, 4, GLES20.GL_FLOAT, false, 0, color.colorBuffer)
-        // GLES20.glUniform4fv(shader.colorHandle, 1, floatArrayOf(1.0f, 1.0f, 1.0f, 1.0f), 0)
-        // GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, loadTexture(bitmap))
 
         GLES20.glUniform1i(textureAttr, 0)
         GLES20.glVertexAttribPointer(textureCoordinate, 3, GLES20.GL_FLOAT, false, 0, textureBuffer)
