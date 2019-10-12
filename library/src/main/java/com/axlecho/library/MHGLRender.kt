@@ -64,17 +64,16 @@ class MHGLRender(private val context: Context, private val bitmap: Bitmap) : GLS
 
         //计算宽高比
         // val ratio = width.toFloat() / height.toFloat()
-        // GLES20.glViewport(0, 0, width, height)
         generateShadowFBO()
-        val ratio = width.toFloat() / height.toFloat()
-
+        // val ratio = width.toFloat() / height.toFloat()
+        val ratio = 1.0f
         Matrix.frustumM(projectionMatrix, 0, -ratio, ratio, -1f, 1f, 2f, 100f)
         Matrix.frustumM(lightProjectionMatrix, 0, -1.1f * ratio, 1.1f * ratio, -1.1f, 1.1f, 2f, 100f)
     }
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         // 设置相机位置
-        Matrix.setLookAtM(MVMatrix, 0, 0.0f, 0.0f, 4f, 0.0f, 0.0f, 0f, 0f, 1.0f, 0.0f)
+        Matrix.setLookAtM(MVMatrix, 0, 2f, 2f, 4f, 2f, 2f, 0f, 0f, 1.0f, 0.0f)
 
         shader = MHGLShader(context)
         GLES20.glEnable(GLES20.GL_DEPTH_TEST)
@@ -123,8 +122,8 @@ class MHGLRender(private val context: Context, private val bitmap: Bitmap) : GLS
         Matrix.setIdentityM(modelMatrix, 0)
         Matrix.setLookAtM(
             lightViewMatrix, 0,
-            -2f, 0f, 3f,
-            0f, 01f, 0f,
+            -2f, 2f, 4f,
+            2f, 2f, 0f,
             0f, 1f, 0f
         )
     }
@@ -134,7 +133,6 @@ class MHGLRender(private val context: Context, private val bitmap: Bitmap) : GLS
         GLES20.glUseProgram(shader.shadow)
 
         GLES20.glViewport(0, 0, shadowMapWidth, shadowMapHeight)
-        GLES20.glClearColor(1f, 1f, 0f, 1f)
         GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT or GLES20.GL_COLOR_BUFFER_BIT)
 
         val tempResultMatrix = FloatArray(16)
@@ -150,7 +148,6 @@ class MHGLRender(private val context: Context, private val bitmap: Bitmap) : GLS
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0)
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
         GLES20.glUseProgram(shader.render)
-        GLES20.glViewport(0, 0, displayWidth, displayHeight)
 
         GLES20.glUniform1f(shader.scene_mapStepXUniform, 1f / shadowMapWidth.toFloat())
         GLES20.glUniform1f(shader.scene_mapStepYUniform, 1f / shadowMapHeight.toFloat())
@@ -180,9 +177,7 @@ class MHGLRender(private val context: Context, private val bitmap: Bitmap) : GLS
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, rendererTextureID[0])
         GLES20.glUniform1i(shader.scene_textureUniform, 0)
-         page.draw(bitmap, shader.scene_positionAttribute, shader.textureHandle, shader.textureCoordinate)
-
-
+        page.draw(bitmap, shader.scene_positionAttribute, shader.textureHandle, shader.textureCoordinate)
         bg.draw(bitmap, shader.scene_positionAttribute, shader.textureHandle, shader.textureCoordinate)
     }
 }

@@ -44,6 +44,9 @@ class MHGLVertex {
                 vertexData[pos] = col.toFloat() / GRID.toFloat() * w_h_ratio - mov_x                                        // x
                 vertexData[pos + 1] = row.toFloat() / GRID.toFloat()                                                        // y
                 vertexData[pos + 2] = (calc_r * Math.sin(3.14 / (GRID * 0.60f) * (col - dx)) + calc_r * 1.1f).toFloat()     // z  Asin(2pi/wav*x)
+
+                vertexData[pos] *= 4.0f
+                vertexData[pos + 1] *= 4.0f
             }
         val bb = ByteBuffer.allocateDirect(vertexData.size * 4)
         bb.order(ByteOrder.nativeOrder())
@@ -136,7 +139,7 @@ class MHPage {
         GLES20.glVertexAttribPointer(positionAttr, 3, GLES20.GL_FLOAT, false, 0, vertex.vertexBuffer)
 
         //设置绘制三角形的颜色
-         MHGLUtils.loadTexture(bitmap)
+        MHGLUtils.loadTexture(bitmap)
         // GLES20.glEnableVertexAttribArray(shader.colorHandle)
         // GLES20.glVertexAttribPointer(shader.colorHandle, 4, GLES20.GL_FLOAT, false, 0, color.colorBuffer)
         // GLES20.glUniform4fv(shader.colorHandle, 1, floatArrayOf(1.0f, 1.0f, 1.0f, 1.0f), 0)
@@ -163,10 +166,10 @@ class MHBackground {
     private val indexBuffer: ShortBuffer
     private val textureBuffer: FloatBuffer
     var vertexData = floatArrayOf(
-        -1.0f, 1.0f, 0.0f,
-        -1.0f, -1.0f, 0.0f,
-        1.0f, -1.0f, 0.0f,
-        1.0f, 1.0f, 0.0f
+        0f, 4.0f, 0.0f,
+        0f, 0f, 0.0f,
+        4.0f, 0f, 0.0f,
+        4.0f, 4.0f, 0.0f
     )
 
     var textueData = floatArrayOf(
