@@ -35,7 +35,7 @@ class MHGLRender(private val context: Context, private val bitmap: Bitmap) : GLS
     private val lightProjectionMatrix = FloatArray(16)
     private val lightViewMatrix = FloatArray(16)
     private val lightPosInEyeSpace = FloatArray(16)
-    private val lightPosModel = floatArrayOf(-2f, 5f, 0f, 1f)
+    private val lightPosModel = floatArrayOf(-2f, 4f, 0f, 1f)
     private val actualLightPosition = FloatArray(16)
 
 
@@ -123,9 +123,9 @@ class MHGLRender(private val context: Context, private val bitmap: Bitmap) : GLS
         Matrix.setIdentityM(modelMatrix, 0)
         Matrix.setLookAtM(
             lightViewMatrix, 0,
-            actualLightPosition[0], actualLightPosition[1], actualLightPosition[2],
-            actualLightPosition[0], -actualLightPosition[1], actualLightPosition[2],
-            -actualLightPosition[0], 0f, 0f
+            -2f, 0f, 3f,
+            0f, 01f, 0f,
+            0f, 1f, 0f
         )
     }
 
@@ -177,11 +177,12 @@ class MHGLRender(private val context: Context, private val bitmap: Bitmap) : GLS
         GLES20.glUniformMatrix4fv(shader.scene_shadowProjMatriUniform, 1, false, lightMvpMatrix_staticShapes, 0)
 
 
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, rendererTextureID[0])
+        GLES20.glUniform1i(shader.scene_textureUniform, 0)
          page.draw(bitmap, shader.scene_positionAttribute, shader.textureHandle, shader.textureCoordinate)
 
-        //GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
-        //GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, rendererTextureID[0])
-        //GLES20.glUniform1i(shader.scene_textureUniform, 0)
+
         bg.draw(bitmap, shader.scene_positionAttribute, shader.textureHandle, shader.textureCoordinate)
     }
 }

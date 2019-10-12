@@ -18,7 +18,7 @@ class MHGLUtils {
             //生成纹理
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texture[0])
             //激活第0个纹理
-            GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
+            GLES20.glActiveTexture(GLES20.GL_TEXTURE1)
             //设置环绕和过滤方式
             //环绕（超出纹理坐标范围）：（s==x t==y GL_REPEAT 重复）
             GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT)
