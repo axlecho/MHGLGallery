@@ -35,7 +35,7 @@ class MHGLRender(private val context: Context, private val bitmap: Bitmap) : GLS
     private val lightProjectionMatrix = FloatArray(16)
     private val lightViewMatrix = FloatArray(16)
     private val lightPosInEyeSpace = FloatArray(16)
-    private val lightPosModel = floatArrayOf(-1f, 9f, 0f, 1f)
+    private val lightPosModel = floatArrayOf(-2f, 5f, 0f, 1f)
     private val actualLightPosition = FloatArray(16)
 
 
@@ -64,7 +64,7 @@ class MHGLRender(private val context: Context, private val bitmap: Bitmap) : GLS
 
         //计算宽高比
         // val ratio = width.toFloat() / height.toFloat()
-        GLES20.glViewport(0, 0, width, height)
+        // GLES20.glViewport(0, 0, width, height)
         generateShadowFBO()
         val ratio = width.toFloat() / height.toFloat()
 
@@ -86,7 +86,7 @@ class MHGLRender(private val context: Context, private val bitmap: Bitmap) : GLS
 
         GLES20.glGenFramebuffers(1, fboId, 0)
 
-        GLES20.glGenRenderbuffers(1, depthTextureId, 0);
+        GLES20.glGenRenderbuffers(1, depthTextureId, 0)
         GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, depthTextureId[0])
         GLES20.glRenderbufferStorage(GLES20.GL_RENDERBUFFER, GLES20.GL_DEPTH_COMPONENT16, shadowMapWidth, shadowMapHeight)
 
@@ -108,9 +108,6 @@ class MHGLRender(private val context: Context, private val bitmap: Bitmap) : GLS
         if (status != GLES20.GL_FRAMEBUFFER_COMPLETE) {
             throw  RuntimeException("GL_FRAMEBUFFER_COMPLETE failed, CANNOT use FBO")
         }
-
-        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0)
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
     }
 
     private fun setLight() {
@@ -137,7 +134,7 @@ class MHGLRender(private val context: Context, private val bitmap: Bitmap) : GLS
         GLES20.glUseProgram(shader.shadow)
 
         GLES20.glViewport(0, 0, shadowMapWidth, shadowMapHeight)
-        GLES20.glClearColor(1f, 1f, 1f, 1f)
+        GLES20.glClearColor(1f, 1f, 0f, 1f)
         GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT or GLES20.GL_COLOR_BUFFER_BIT)
 
         val tempResultMatrix = FloatArray(16)
@@ -145,6 +142,7 @@ class MHGLRender(private val context: Context, private val bitmap: Bitmap) : GLS
         Matrix.multiplyMM(tempResultMatrix, 0, lightProjectionMatrix, 0, lightMvpMatrix_staticShapes, 0)
         System.arraycopy(tempResultMatrix, 0, lightMvpMatrix_staticShapes, 0, 16)
         GLES20.glUniformMatrix4fv(shader.shadow_mvpMatrixUniform, 1, false, lightMvpMatrix_staticShapes, 0)
+        // bg.drawShadow(shader.shadow_positionAttribute)
         page.drawShadow(shader.shadow_positionAttribute)
     }
 
@@ -178,11 +176,12 @@ class MHGLRender(private val context: Context, private val bitmap: Bitmap) : GLS
         System.arraycopy(depthBiasMVP, 0, lightMvpMatrix_staticShapes, 0, 16)
         GLES20.glUniformMatrix4fv(shader.scene_shadowProjMatriUniform, 1, false, lightMvpMatrix_staticShapes, 0)
 
-        //GLES20.glActiveTexture(GLES20.GL_TEXTURE1)
-        //GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, rendererTextureID[0])
-        //GLES20.glUniform1i(shader.scene_textureUniform, 1)
 
          page.draw(bitmap, shader.scene_positionAttribute, shader.textureHandle, shader.textureCoordinate)
-         bg.draw(bitmap, shader.scene_positionAttribute, shader.textureHandle, shader.textureCoordinate)
+
+        //GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
+        //GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, rendererTextureID[0])
+        //GLES20.glUniform1i(shader.scene_textureUniform, 0)
+        bg.draw(bitmap, shader.scene_positionAttribute, shader.textureHandle, shader.textureCoordinate)
     }
 }
