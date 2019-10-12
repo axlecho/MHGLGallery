@@ -11,8 +11,8 @@ class MHGLShader(context: Context) {
     val render: Int get() = renderProgram.program
     val shadow: Int get() = shadowProgram.program
 
-    val textureHandle = GLES20.glGetUniformLocation(render, "vTexture")
-    val textureCoordinate = GLES20.glGetAttribLocation(render, "vCoordinate")
+    val textureHandle = GLES20.glGetUniformLocation(render, "uTexture")
+    val textureCoordinate = GLES20.glGetAttribLocation(render, "aTextureCoordinate")
 
     val scene_mvpMatrixUniform = GLES20.glGetUniformLocation(render, "uMVPMatrix")
     val scene_lightPosUniform = GLES20.glGetUniformLocation(render, "uLightPos")

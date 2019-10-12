@@ -27,7 +27,6 @@ class MHGLRender(private val context: Context, private val bitmap: Bitmap) : GLS
     private val MVMatrix = FloatArray(16)
     private val normalMatrix = FloatArray(16)
     private val projectionMatrix = FloatArray(16)
-    private val viewMatrix = FloatArray(16)
 
 
     private val modelMatrix = FloatArray(16)
@@ -36,7 +35,7 @@ class MHGLRender(private val context: Context, private val bitmap: Bitmap) : GLS
     private val lightProjectionMatrix = FloatArray(16)
     private val lightViewMatrix = FloatArray(16)
     private val lightPosInEyeSpace = FloatArray(16)
-    private val lightPosModel = floatArrayOf(-5f, 9f, 0f, 1f)
+    private val lightPosModel = floatArrayOf(-1f, 9f, 0f, 1f)
     private val actualLightPosition = FloatArray(16)
 
 
@@ -69,19 +68,13 @@ class MHGLRender(private val context: Context, private val bitmap: Bitmap) : GLS
         generateShadowFBO()
         val ratio = width.toFloat() / height.toFloat()
 
-        Matrix.frustumM(projectionMatrix, 0, -ratio, ratio, -1f, 1f, 1f, 100f)
-        Matrix.frustumM(lightProjectionMatrix, 0, -1.1f * ratio, 1.1f * ratio, -1.1f, 1.1f, 1f, 100f)
-
-//        //设置透视投影
-//        Matrix.frustumM(projectionMatrix, 0, -1.0f, 1.0f, -ratio, ratio, 3f, 50f)
-//        //计算变换矩阵
-//        Matrix.multiplyMM(MVPMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
-//        Matrix.frustumM(lightProjectionMatrix, 0, -1.1f * ratio, 1.1f * ratio, -1.1f, 1.1f, 1f, 100f)
+        Matrix.frustumM(projectionMatrix, 0, -ratio, ratio, -1f, 1f, 2f, 100f)
+        Matrix.frustumM(lightProjectionMatrix, 0, -1.1f * ratio, 1.1f * ratio, -1.1f, 1.1f, 2f, 100f)
     }
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         // 设置相机位置
-        Matrix.setLookAtM(viewMatrix, 0, 0.0f, 0.0f, 4f, 0.0f, 0.0f, 0f, 0f, 1.0f, 0.0f)
+        Matrix.setLookAtM(MVMatrix, 0, 0.0f, 0.0f, 4f, 0.0f, 0.0f, 0f, 0f, 1.0f, 0.0f)
 
         shader = MHGLShader(context)
         GLES20.glEnable(GLES20.GL_DEPTH_TEST)
@@ -173,24 +166,21 @@ class MHGLRender(private val context: Context, private val bitmap: Bitmap) : GLS
         )
 
         val depthBiasMVP = FloatArray(16)
-        Matrix.multiplyMM(tempResultMatrix, 0, viewMatrix, 0, modelMatrix, 0)
-        System.arraycopy(tempResultMatrix, 0, MVMatrix, 0, 16)
-        // GLES20.glUniformMatrix4fv(scene_mvMatrixUniform, 1, false, MVMatrix, 0)
 
         Matrix.multiplyMM(tempResultMatrix, 0, projectionMatrix, 0, MVMatrix, 0)
         System.arraycopy(tempResultMatrix, 0, MVPMatrix, 0, 16)
         GLES20.glUniformMatrix4fv(shader.scene_mvpMatrixUniform, 1, false, MVPMatrix, 0)
 
-        Matrix.multiplyMV(lightPosInEyeSpace, 0, viewMatrix, 0, actualLightPosition, 0)
+        Matrix.multiplyMV(lightPosInEyeSpace, 0, MVMatrix, 0, actualLightPosition, 0)
         GLES20.glUniform3f(shader.scene_lightPosUniform, lightPosInEyeSpace[0], lightPosInEyeSpace[1], lightPosInEyeSpace[2])
 
         Matrix.multiplyMM(depthBiasMVP, 0, bias, 0, lightMvpMatrix_staticShapes, 0)
         System.arraycopy(depthBiasMVP, 0, lightMvpMatrix_staticShapes, 0, 16)
         GLES20.glUniformMatrix4fv(shader.scene_shadowProjMatriUniform, 1, false, lightMvpMatrix_staticShapes, 0)
 
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE1)
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, rendererTextureID[0])
-        GLES20.glUniform1i(shader.scene_textureUniform, 1)
+        //GLES20.glActiveTexture(GLES20.GL_TEXTURE1)
+        //GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, rendererTextureID[0])
+        //GLES20.glUniform1i(shader.scene_textureUniform, 1)
 
          page.draw(bitmap, shader.scene_positionAttribute, shader.textureHandle, shader.textureCoordinate)
          bg.draw(bitmap, shader.scene_positionAttribute, shader.textureHandle, shader.textureCoordinate)

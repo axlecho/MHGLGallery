@@ -1,6 +1,6 @@
 precision mediump float;
-uniform sampler2D vTexture;
-varying vec2 aCoordinate;
+uniform sampler2D uTexture;
+varying vec2 vTextureCoordinate;
 
 
 // The position of the light in eye space.
@@ -9,41 +9,21 @@ uniform vec3 uLightPos;
 // Texture variables: depth texture
 uniform sampler2D uShadowTexture;
 
-// This define the value to move one pixel left or right
-uniform float uxPixelOffset;
-// This define the value to move one pixel up or down
-uniform float uyPixelOffset;
-
 // shadow coordinates
 varying vec4 vShadowCoord;
 
-float lookup( vec2 offSet)
+float shadowSimple()
 {
     vec4 shadowMapPosition = vShadowCoord / vShadowCoord.w;
 
-    float distanceFromLight = texture2D(uShadowTexture, (shadowMapPosition +
-    vec4(offSet.x * uxPixelOffset, offSet.y * uyPixelOffset, 0.05, 0.0)).st ).z;
+    float distanceFromLight = texture2D(uShadowTexture, shadowMapPosition.st).z;
 
     //add bias to reduce shadow acne (error margin)
     float bias = 0.0005;
 
+    //1.0 = not in shadow (fragmant is closer to light than the value stored in shadow map)
+    //0.0 = in shadow
     return float(distanceFromLight > shadowMapPosition.z - bias);
-}
-
-float shadowPCF()
-{
-    float shadow = 1.0;
-
-    for (float y = -1.5; y <= 1.5; y = y + 1.0) {
-        for (float x = -1.5; x <= 1.5; x = x + 1.0) {
-            shadow += lookup(vec2(x,y));
-        }
-    }
-
-    shadow /= 16.0;
-    shadow += 0.2;
-
-    return shadow;
 }
 
 
@@ -55,7 +35,7 @@ void main(){
     // if the fragment is not behind light view frustum
     if (vShadowCoord.w > 0.0) {
 
-        shadow = shadowPCF();
+        shadow = shadowSimple();
 
         //scale 0.0-1.0 to 0.2-1.0
         //otherways everything in shadow would be black
@@ -63,5 +43,5 @@ void main(){
     }
 
 
-    gl_FragColor=texture2D(vTexture, aCoordinate) * shadow;
+    gl_FragColor=texture2D(uTexture, vTextureCoordinate) * shadow;
 }

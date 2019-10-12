@@ -10,12 +10,12 @@ attribute vec4 aPosition;
 varying vec4 vShadowCoord;
 
 // 贴图坐标
-varying vec2 aCoordinate;
-attribute vec2 vCoordinate;
+varying vec2 vTextureCoordinate;
+attribute vec2 aTextureCoordinate;
 
 void main() {
      vShadowCoord = uShadowProjMatrix * aPosition;
 
-    aCoordinate=vCoordinate;
+    vTextureCoordinate=aTextureCoordinate;
     gl_Position = uMVPMatrix * aPosition;
 }
