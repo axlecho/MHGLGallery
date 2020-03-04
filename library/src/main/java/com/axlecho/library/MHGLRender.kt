@@ -173,11 +173,14 @@ class MHGLRender(private val context: Context, private val bitmap: Bitmap) : GLS
         System.arraycopy(depthBiasMVP, 0, lightMvpMatrix_staticShapes, 0, 16)
         GLES20.glUniformMatrix4fv(shader.scene_shadowProjMatriUniform, 1, false, lightMvpMatrix_staticShapes, 0)
 
-
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, rendererTextureID[0])
         GLES20.glUniform1i(shader.scene_textureUniform, 0)
         page.draw(bitmap, shader.scene_positionAttribute, shader.textureHandle, shader.textureCoordinate)
         bg.draw(bitmap, shader.scene_positionAttribute, shader.textureHandle, shader.textureCoordinate)
+    }
+
+    fun setProgress(progress: Float) {
+        page.setProgress(progress / displayWidth)
     }
 }

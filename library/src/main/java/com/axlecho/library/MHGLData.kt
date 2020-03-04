@@ -2,7 +2,6 @@ package com.axlecho.library
 
 import android.graphics.Bitmap
 import android.opengl.GLES20
-import android.os.SystemClock
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
@@ -14,7 +13,7 @@ private const val RADIUS = 0.18f
 class MHGLVertex {
     var vertexBuffer: FloatBuffer? = null
     private var vertexData = FloatArray((GRID + 1) * (GRID + 1) * 3)
-    var curlCirclePosition = 15.0f
+    var curlCirclePosition = 100.0f
 
     init {
         move()
@@ -131,10 +130,13 @@ class MHPage {
     private val texture = MHGLTexture()
 
 
-    fun draw(bitmap: Bitmap, positionAttr: Int, textureAttr: Int, textureCoordinate: Int) {
-        vertex.curlCirclePosition = 100.0f - (SystemClock.currentThreadTimeMillis().toFloat() / 100.0f)
+    fun setProgress(progress: Float) {
+        vertex.curlCirclePosition = progress * GRID
         vertex.move()
         MHGLLog.v("onDrawFrame move to ${vertex.curlCirclePosition}")
+    }
+
+    fun draw(bitmap: Bitmap, positionAttr: Int, textureAttr: Int, textureCoordinate: Int) {
         //准备三角形的坐标数据
         GLES20.glVertexAttribPointer(positionAttr, 3, GLES20.GL_FLOAT, false, 0, vertex.vertexBuffer)
 
@@ -153,8 +155,6 @@ class MHPage {
     }
 
     fun drawShadow(positionAttr: Int) {
-        vertex.curlCirclePosition = 100.0f - (SystemClock.currentThreadTimeMillis().toFloat() / 100.0f)
-        vertex.move()
         MHGLLog.v("onDrawFrame move to ${vertex.curlCirclePosition}")
         GLES20.glVertexAttribPointer(positionAttr, 3, GLES20.GL_FLOAT, false, 0, vertex.vertexBuffer)
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, index.index.size, GLES20.GL_UNSIGNED_SHORT, index.indexBuffer)
